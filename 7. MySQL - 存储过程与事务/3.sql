@@ -4,19 +4,20 @@ use finance1;
 -- 请补充代码完成该过程：
 delimiter $$
 create procedure sp_transfer(
-    IN applicant_id int,      
-    IN source_card_id char(30),
-    IN receiver_id int, 
-    IN dest_card_id char(30),
-    IN	amount numeric(10,2),
-    OUT return_code int)
+  IN applicant_id int,      
+  IN source_card_id char(30),
+  IN receiver_id int, 
+  IN dest_card_id char(30),
+  IN	amount numeric(10,2),
+  OUT return_code int)
 BEGIN
-set autocommit = off;
-start transaction;
+set autocommit = off; /*开启自动事务模式*/
+start transaction; /*开启事务*/
     update bank_card set b_balance = b_balance-amount where b_number = source_card_id and b_c_id = applicant_id and b_type = "储蓄卡";
     update bank_card set b_balance = b_balance+amount where b_number = dest_card_id and b_c_id = receiver_id and b_type = "储蓄卡";
     update bank_card set b_balance = b_balance-amount where b_number = dest_card_id and b_c_id = receiver_id and b_type = "信用卡";
 
+    /*检查转出转入账户的有效性，若无效则事务回滚，有效则提交 */
     if not exists(select * from bank_card where b_number = source_card_id and b_c_id=applicant_id and b_type = "储蓄卡" and b_balance > 0) then
         set return_code = 0;
         rollback;
@@ -27,17 +28,7 @@ start transaction;
         set return_code = 1;
         commit;
     end if;
-set autocommit = true;
-
+set autocommit = true; /*关闭自动事务模式*/
 END$$
-
 delimiter ;
-
-
-
-
-
-
-
-
 /*  end  of  your code  */ 

@@ -1,5 +1,4 @@
 import java.sql.*;
-
 public class Client {
   static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
   static final String DB_URL = "jdbc:mysql://127.0.0.1:3306/finance?useUnicode=true&characterEncoding=UTF8&useSSL=false&serverTimezone=UTC";
@@ -16,7 +15,7 @@ public class Client {
       connection = DriverManager.getConnection(DB_URL, USER, PASS);
       statement = connection.createStatement();
       resultSet = statement.executeQuery("select c_name, c_mail, c_phone from client where c_mail is not null");
-      System.out.println("??\t??\t\t\t\t??");
+      System.out.println("姓名\t邮箱\t\t\t\t电话");
       while (resultSet.next()) {
         System.out.print(resultSet.getString("c_name") + "\t");
         System.out.print(resultSet.getString("c_mail") + "\t\t");
@@ -29,16 +28,12 @@ public class Client {
       throwables.printStackTrace();
     } finally {
       try {
-        if (resultSet != null) {
+        if (resultSet != null)
           resultSet.close();
-        }
-        if (statement != null) {
+        if (statement != null)
           statement.close();
-        }
-
-        if (connection != null) {
+        if (connection != null)
           connection.close();
-        }
       } catch (SQLException throwables) {
         throwables.printStackTrace();
       }
